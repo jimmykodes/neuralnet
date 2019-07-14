@@ -7,17 +7,24 @@ class Neuron:
     class NeuronException(Exception):
         pass
 
-    def __init__(self, number_of_inputs, weights=None, biase=None, biase_weight=None, training_rate=.5):
+    def __init__(self, number_of_inputs, training_rate=.5, weights=None, biase=None, biase_weight=None, location=None):
         if weights and len(weights) != number_of_inputs:
             raise self.NeuronException('number of inputs and length of supplied weights must be the same')
         self.weights = weights if weights is not None else list(np.random.normal(0, .5, number_of_inputs))
         self.biase = biase
         self.biase_weight = biase_weight if biase_weight is not None else np.random.normal(0, .5)
         self.training_rate = training_rate
+        self.location = location
+        self.training_error = []
 
     def _activation(self, x):
         return 1 / (1 + math.exp(-x))
         # return 0 if x < 0 else 1
+
+    def step_train(self, data, desired):
+        error = desired[self.location] - self.guess(data)
+        self.training_error.append(error)
+        self.adjust_weights(data, error)
 
     def guess(self, inputs):
         if len(inputs) != len(self.weights):

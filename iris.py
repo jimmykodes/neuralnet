@@ -1,10 +1,10 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
-import numpy as np
+
 from one_hot import OneHotNeuralNet
-import matplotlib.pyplot as plt
 
 
 def plot_error(data):

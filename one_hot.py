@@ -1,23 +1,22 @@
 from neuron import Neuron
+import numpy as np
 
 
 class OneHotNeuralNet:
     def __init__(self, number_of_inputs, number_of_neurons):
         self.number_of_inputs = number_of_inputs
         self.number_of_neurons = number_of_neurons
-        self.neurons = [Neuron(number_of_inputs=number_of_inputs) for _ in range(number_of_neurons)]
+        weights = list(np.random.normal(0, .5, size=4))
+        self.neurons = [Neuron(number_of_inputs=number_of_inputs, weights=weights.copy(), location=i) for i in range(number_of_neurons)]
 
-    def train(self, x_train, y_train, training_cycles=5):
+    def train(self, x_train, y_train, training_cycles=2):
         for cycle_number in range(training_cycles):
             for i, data in enumerate(x_train):
                 desired = [0 for _ in range(self.number_of_neurons)]
                 desired[y_train[i]] = 1
-                output = []
                 for neuron in self.neurons:
-                    output.append(neuron.guess(data))
-                error = [desired[i] - output[i] for i in range(self.number_of_neurons)]
-                for n, neuron in enumerate(self.neurons):
-                    neuron.adjust_weights(data, error[n], training_rate=.5 / (cycle_number + 1))
+                    neuron.step_train(data, desired)
+        return [neuron.training_error for neuron in self.neurons]
 
     def test(self, x_test, y_test):
         error_points = []
