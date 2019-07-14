@@ -21,10 +21,10 @@ class Neuron:
         return 1 / (1 + math.exp(-x))
         # return 0 if x < 0 else 1
 
-    def step_train(self, data, desired):
+    def step_train(self, data, desired, training_rate=None):
         error = desired[self.location] - self.guess(data)
         self.training_error.append(error)
-        self.adjust_weights(data, error)
+        self.adjust_weights(data, error, training_rate=training_rate)
 
     def guess(self, inputs):
         if len(inputs) != len(self.weights):
@@ -50,6 +50,7 @@ class Neuron:
             for d, data in enumerate(x_train):
                 prediction = self.guess(data)
                 error = y_train[d] - prediction
+                self.training_error.append(error)
                 if error != 0:
                     self.adjust_weights(data, error, local_training_rate)
 
