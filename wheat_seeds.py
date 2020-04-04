@@ -37,17 +37,13 @@ def plot_error(data):
 #     )
 #     p_plot.fig.show()
 
-
 def main():
-    with open('data/seed_data.json') as f:
+    with open('data/seeds.json') as f:
         seeds = json.load(f)
-
-    for point in seeds['data']:
-        assert len(point) == 7, point
-    x_train, x_test, y_train, y_test = train_test_split(seeds['data'], seeds['target'], train_size=0.7)
+    x_train, x_test, y_train, y_test = train_test_split(seeds['normalized'], seeds['target'], train_size=0.7)
     network = OneHotNeuralNet(number_of_inputs=7, number_of_neurons=3)
     error_rate = network.train(x_train, y_train, training_cycles=5)
-    error, error_points = network.test(x_test, y_test)
+    error, error_points = network.test(seeds['normalized'], seeds['target'])
     print(f'Accuracy: {100 - (error * 100):0.1f}%\nNumber of errors: {len(error_points)}')
     plot_error(error_rate)
     # if len(error_points) >= 50:

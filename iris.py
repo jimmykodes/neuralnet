@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn import datasets
@@ -37,17 +38,43 @@ def plot_results(iris, error_points):
     p_plot.fig.show()
 
 
+def plot_weights(network):
+    plot_data1 = np.transpose([[hist[0] for hist in neuron.weight_history] for neuron in network.neurons])
+    plot_data2 = np.transpose([[hist[1] for hist in neuron.weight_history] for neuron in network.neurons])
+    plot_data3 = np.transpose([[hist[2] for hist in neuron.weight_history] for neuron in network.neurons])
+    plot_data4 = np.transpose([[hist[3] for hist in neuron.weight_history] for neuron in network.neurons])
+    df1 = pd.DataFrame(plot_data1, columns=['n1', 'n2', 'n3'])
+    df2 = pd.DataFrame(plot_data2, columns=['n1', 'n2', 'n3'])
+    df3 = pd.DataFrame(plot_data3, columns=['n1', 'n2', 'n3'])
+    df4 = pd.DataFrame(plot_data4, columns=['n1', 'n2', 'n3'])
+    plt.subplot(4, 1, 1)
+    sns.lineplot(data=df1, dashes=False)
+    plt.subplot(4, 1, 2)
+    sns.lineplot(data=df2, legend=False, dashes=False)
+    plt.subplot(4, 1, 3)
+    sns.lineplot(data=df3, legend=False, dashes=False)
+    plt.subplot(4, 1, 4)
+    sns.lineplot(data=df4, legend=False, dashes=False)
+    plt.show()
+
+
 def main():
     iris = datasets.load_iris()
-    x_train, x_test, y_train, y_test = train_test_split(iris.data, iris.target)
+    data = iris.data
+    x_train, x_test, y_train, y_test = train_test_split(data, iris.target)
     network = OneHotNeuralNet(number_of_inputs=4, number_of_neurons=3)
-    error_rate = network.train(x_train, y_train)
-    error, error_points = network.test(iris.data, iris.target)
-    print(f'Error Percentage: {error * 100}\nNumber of errors: {len(error_points)}')
-    plot_error(error_rate)
-    if len(error_points) >= 50:
-        print('too many errors, not plotting')
-        return
+    network.train(x_train, y_train, training_cycles=10)
+    error, error_points = network.test(data, iris.target)
+    accuracy = (1 - error) * 100
+    print(f'Accuracy: {accuracy:0.2f}%\nNumber of errors: {len(error_points)}')
+    print(network.error_output)
+    if accuracy > 70:
+        weights = [neuron.weights for neuron in network.neurons]
+        print(weights)
+    # plot_weights(network)
+    # if len(error_points) >= 50:
+    #     print('too many errors, not plotting')
+    #     return
     plot_results(iris, error_points)
 
 
